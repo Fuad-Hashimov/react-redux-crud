@@ -1,0 +1,125 @@
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../redux/actions";
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      margin: theme.spacing(1),
+      width: "50ch",
+    },
+  },
+}));
+
+const useButtonStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+}));
+
+const AddUser = () => {
+  const classes = useStyles();
+  const history = useHistory();
+  const [state, setstate] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    website: "",
+  });
+  const [error, setError] = useState("");
+
+  const { name, email, phone, website } = state;
+
+  let dispatch = useDispatch();
+
+  const handleInputChange = (e) => {
+    let { name, value } = e.target;
+    setstate({ ...state, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    if (!name || !email || !phone || !website) {
+      setError("Please input all input Field");
+    } else {
+      dispatch(addUser(state));
+      history.push("/");
+      setError("");
+    }
+
+    e.preventDefault();
+  };
+
+  return (
+    <div>
+      <div className={useButtonStyles.root}>
+        <Button
+          onClick={() => history.push("/")}
+          variant="contained"
+          color="primary"
+        >
+          Go Back
+        </Button>
+      </div>
+      <h2>Add User</h2>
+      {error && <h3 style={{ color: "red" }}>{error}</h3>}
+      <form
+        onSubmit={handleSubmit}
+        className={classes.root}
+        noValidate
+        autoComplete="off"
+      >
+        <TextField
+          onChange={handleInputChange}
+          id="standard-basic"
+          label="Name"
+          name="name"
+          value={name}
+          type="text"
+        />
+        <br />
+        <TextField
+          onChange={handleInputChange}
+          id="standard-basic"
+          label="Email"
+          value={email}
+          name="email"
+          type="text"
+        />
+        <br />
+        <TextField
+          onChange={handleInputChange}
+          id="standard-basic"
+          label="Phone"
+          value={phone}
+          name="phone"
+          type="text"
+        />
+        <br />
+        <TextField
+          onChange={handleInputChange}
+          id="standard-basic"
+          label="Website"
+          value={website}
+          name="website"
+          type="text"
+        />
+        <br />
+        <div className={useButtonStyles.root}>
+          <Button type="submit" variant="contained" color="primary">
+            Add User
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default AddUser;

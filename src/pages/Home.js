@@ -8,7 +8,11 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { useDispatch, useSelector } from "react-redux";
-import { loadUsers } from "../redux/actions";
+import { deleteUsers, loadUsers } from "../redux/actions";
+
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import { useHistory } from "react-router-dom";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -45,7 +49,7 @@ const useStyles = makeStyles({
     minWidth: 700,
   },
   container: {
-    width: "80%",
+    width: "90%",
     margin: "auto",
   },
   tableSection: {
@@ -56,17 +60,46 @@ const useStyles = makeStyles({
     height: "100vh",
   },
 });
+
+const useButtonStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+}));
+
 function Home() {
   const classes = useStyles();
   let dispatch = useDispatch();
+  let history = useHistory();
   let { users } = useSelector((state) => state.users);
- 
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure wanted to delete the user ???")) {
+      dispatch(deleteUsers(id));
+    }
+  };
+
   useEffect(() => {
     dispatch(loadUsers());
   }, [dispatch]);
 
   return (
     <div>
+      <div className={useButtonStyles.root}>
+        <Button
+          onClick={() => history.push("/addUser")}
+          variant="contained"
+          color="primary"
+        >
+          Add User
+        </Button>
+      </div>
+
       <TableContainer className={classes.container} component={Paper}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
@@ -77,8 +110,10 @@ function Home() {
                 Address City Street
               </StyledTableCell> */}
               <StyledTableCell align="center">Phone</StyledTableCell>
-              <StyledTableCell align="center">Company Name</StyledTableCell>
+
               <StyledTableCell align="center">Website</StyledTableCell>
+
+              <StyledTableCell align="center">Actions</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -87,15 +122,26 @@ function Home() {
                 <StyledTableCell component="th" scope="row">
                   {user.name}
                 </StyledTableCell>
-                <StyledTableCell align="center">{user.email}</StyledTableCell> 
+                <StyledTableCell align="center">{user.email}</StyledTableCell>
                 {/* <StyledTableCell align="center">
                   {user.address.city}
                 </StyledTableCell> */}
                 <StyledTableCell align="center">{user.phone}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {user.company.name}
-                </StyledTableCell>
                 <StyledTableCell align="center">{user.website}</StyledTableCell>
+                <StyledTableCell className={classes.root}>
+                  <ButtonGroup
+                    color="primary"
+                    aria-label="outlined primary button group"
+                  >
+                    <Button onClick={()=> history.push(`/editUser/${user.id}`)}>Edit</Button>
+                    <Button
+                      onClick={() => handleDelete(user.id)}
+                      style={{ color: "red" }}
+                    >
+                      Delete
+                    </Button>
+                  </ButtonGroup>
+                </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody>
