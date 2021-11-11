@@ -11,7 +11,7 @@ export const loadUsers = () => {
     axios
       .get(`${process.env.REACT_APP_API}`)
       .then((res) => {
-        console.log("resp : ", res);
+        // console.log("resp : ", res);
         dispatch(getUsers(res.data));
       })
       .catch((err) => console.log(err));
